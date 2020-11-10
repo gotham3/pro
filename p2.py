@@ -114,12 +114,11 @@ for k in range(len(doc)):
 sid = SentimentIntensityAnalyzer()
 
 for j in range(len(doc)):
-    if senti[j]<3:
+    if senti[j]<=3:
       	sentiment_doc.append("Negative") 
     elif senti[j]>3:
     	sentiment_doc.append("Positive")
-    else:
-      sentiment_doc.append("Neutral")
+    
     
     ss = sid.polarity_scores(tweets[j])
     posscore=ss['pos']
@@ -249,15 +248,12 @@ for j in range(len(doc)):
     print("\nDefuzzified Output: "+str(output))
 
 # Scale : Neg Neu Pos   
-    if 0<(output)<3.33:    # R
+    if 0<(output)<5:    # R
         print("\nOutput after Defuzzification: Negative")
         sentiment.append("Negative")
         
-    elif 3.34<(output)<6.66:
-        print("\nOutput after Defuzzification: Neutral")
-        sentiment.append("Neutral")
    
-    elif 6.67<(output)<10:
+    elif 5<=(output)<10:
         print("\nOutput after Defuzzification: Positive")
         sentiment.append("Positive")
         
