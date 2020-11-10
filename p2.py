@@ -249,13 +249,15 @@ for j in range(len(doc)):
     print("\nDefuzzified Output: "+str(output))
 
 # Scale : Neg Neu Pos   
-    if 0<(output)<=4:    # R
+    if 0<(output)<3.33:    # R
         print("\nOutput after Defuzzification: Negative")
         sentiment.append("Negative")
-    elif 4<(output)<6:
-    	print("\nOutput after Defuzzification: Neutral")
+        
+    elif 3.34<(output)<6.66:
+        print("\nOutput after Defuzzification: Neutral")
         sentiment.append("Neutral")
-    elif 6<=(output)<10:
+   
+    elif 6.67<(output)<10:
         print("\nOutput after Defuzzification: Positive")
         sentiment.append("Positive")
         
