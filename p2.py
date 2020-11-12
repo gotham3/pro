@@ -20,8 +20,8 @@ start = time.time()
 
 #You can insert path of any dataset with column TweetText for the text and Sentiment for the sentiment labels of text
 
-traindata=pd.read_csv(r"C:\Users\Rohith\Downloads\amazon_food_reviews/Reviews.csv",encoding='ISO-8859-1')  
-traindata=traindata.sample(n = 5000)
+traindata=pd.read_csv(r"C:\Users\Rohith\Downloads\amazon_food_reviews\Reviews.csv",encoding='ISO-8859-1')  
+traindata=traindata.sample(n = 1000)
 doc=traindata.Summary
 print(len(doc))
 sentidoc=traindata.Score
@@ -53,13 +53,11 @@ ax0.plot(x_p, p_md, 'g', linewidth=1.5, label='Medium')
 ax0.plot(x_p, p_hi, 'r', linewidth=1.5, label='High')
 ax0.set_title('Pos')
 ax0.legend()
-
 ax1.plot(x_n, n_lo, 'b', linewidth=1.5, label='Low')
 ax1.plot(x_n, n_md, 'g', linewidth=1.5, label='Medium')
 ax1.plot(x_n, n_hi, 'r', linewidth=1.5, label='High')
 ax1.set_title('Neg')
 ax1.legend()
-
 ax2.plot(x_op, op_Pos, 'b', linewidth=1.5, label='Negative')
 ax2.plot(x_op, op_Neu, 'g', linewidth=1.5, label='Neutral')
 ax2.plot(x_op, op_Neg, 'r', linewidth=1.5, label='Positive')
@@ -281,18 +279,12 @@ print(len(sentiment_doc))
 from sklearn.metrics import f1_score, precision_score, recall_score
 y_true = sentiment_doc
 y_pred = sentiment
-
 #p1=precision_score(y_true, y_pred, average='macro')  
-
 print("Precision score (MACRO): " + str(round((p1*100),2)))
-
 #r1=recall_score(y_true, y_pred, average='macro')  
-
 #print("Recall score (MACRO): " + str(round((r1*100),2)))
-
 f1=f1_score(y_true, y_pred, average='macro')  
 f2=f1_score(y_true, y_pred, average='micro')  
-
 print("F1 score (MACRO): " + str(round((f1*100),2)))
 print("F1 score (MICRO): "+ str(round((f2*100),2)))
 #a
