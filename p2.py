@@ -132,12 +132,7 @@ for j in range(len(tweets)):
     print("------ review -------")
     print(str(j+1)+" {:-<65} {}".format(tweets[j], str(ss))) 
     
-    if posscore>negscore:
-        posscore+=neuscore
-        negscore=0
-    if posscore<negscore:
-        negscore+=neuscore
-        posscore=0
+    
     if (posscore==1.0):
         posscore=0.9 
     else:
@@ -186,9 +181,9 @@ for j in range(len(tweets)):
     n2=np.fmax(n1,active_rule8)     
     op_activation_lo = np.fmin(n2,op_Neg)
     
-    neu1=np.fmax(active_rule1,active_rule5)
-    neu2=np.fmax(neu1,active_rule9)     
-    op_activation_md = np.fmin(neu2,op_Neu)
+    #neu1=np.fmax(active_rule1,active_rule5)
+    #neu2=np.fmax(neu1,active_rule9)     
+    #op_activation_md = np.fmin(neu2,op_Neu)
     
     p1=np.fmax(active_rule2,active_rule3)
     p2=np.fmax(p1,active_rule6)   
@@ -197,8 +192,7 @@ for j in range(len(tweets)):
     op0 = np.zeros_like(x_op)
     
     # Aggregate all three output membership functions together
-    aggregated = np.fmax(op_activation_lo,
-                         np.fmax(op_activation_md, op_activation_hi))
+    aggregated = np.fmax(op_activation_lo, op_activation_hi)
     
     # Calculate defuzzified result
     op = fuzz.defuzz(x_op, aggregated, 'centroid')
