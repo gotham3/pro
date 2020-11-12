@@ -110,11 +110,14 @@ for k in range(len(doc)):
     tweets[k]=decontracted(tweets[k])
          
 sid = SentimentIntensityAnalyzer()
-
+dpos=0
+dneg=0
 for j in range(len(doc)):
     if senti[j]<=3:
+        dneg+=1
       	sentiment_doc.append("Negative") 
     elif senti[j]>3:
+        dpos+=1
     	sentiment_doc.append("Positive")
     
     
@@ -256,16 +259,18 @@ for j in range(len(doc)):
     #print("\nAggregated Output: "+str(aggregated))
 
     print("\nDefuzzified Output: "+str(output))
-
+    tpos=0
+    tneg=0
 # Scale : Neg Neu Pos   
     if 0<(output)<5:    # R
         print("\nOutput after Defuzzification: Negative")
         sentiment.append("Negative")
-        
+        tneg+=1
    
     elif 5<=(output)<10:
         print("\nOutput after Defuzzification: Positive")
         sentiment.append("Positive")
+        tpos+=1
         
     print("Doc sentiment: " +str(senti[j])+"\n")    
     
@@ -274,7 +279,8 @@ for k in range(len(doc)):
     if(sentiment_doc[k]==sentiment[k]):
         count=count+1       
 #print("Accuracy is: "+ str(round(count/len(doc)*100,2)))
-
+print("doc:",dpos,dneg)
+print("predicted:",tpos,tneg")
 print("-----------")
 print(tweets)
 print(senti)
