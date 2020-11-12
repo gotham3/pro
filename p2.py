@@ -125,21 +125,29 @@ for j in range(len(doc)):
     compoundscore=ss['compound']
     print("------ review -------")
     print(str(j+1)+" {:-<65} {}".format(tweets[j], str(ss))) 
-    
     print("\nPositive Score for each  tweet :")    
-    if (posscore==1):
+    if (posscore==1.0):
         posscore=0.9 
     else:
         posscore=round(posscore,1)
     print(posscore)
 
     print("\nNegative Score for each  tweet :")
-    if (negscore==1):
+    if posscore>negscore:
+        posscore+=neuscore
+        negscore=0
+    if posscore<negscore:
+        negscore+=neuscore
+        posscore=0
+    if (negscore==1.0):
         negscore=0.9
     else:
         negscore=round(negscore,1)
     print(negscore)
-
+    if posscore==1.0 and negscore==0.0:
+        posscore=0.9
+        negscore=0.0
+        neuscore=0.1
 # We need the activation of our fuzzy membership functions at these values.
     p_level_lo = fuzz.interp_membership(x_p, p_lo, posscore)
     p_level_md = fuzz.interp_membership(x_p, p_md, posscore)
