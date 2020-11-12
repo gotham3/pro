@@ -112,13 +112,15 @@ for k in range(len(doc)):
 sid = SentimentIntensityAnalyzer()
 dpos=0
 dneg=0
+tpos=0
+tneg=0
 for j in range(len(doc)):
     if senti[j]<=3:
         dneg+=1
-      	sentiment_doc.append("Negative") 
+        sentiment_doc.append("Negative") 
     elif senti[j]>3:
         dpos+=1
-    	sentiment_doc.append("Positive")
+        sentiment_doc.append("Positive")
     
     
     ss = sid.polarity_scores(tweets[j])
@@ -259,8 +261,6 @@ for j in range(len(doc)):
     #print("\nAggregated Output: "+str(aggregated))
 
     print("\nDefuzzified Output: "+str(output))
-    tpos=0
-    tneg=0
 # Scale : Neg Neu Pos   
     if 0<(output)<5:    # R
         print("\nOutput after Defuzzification: Negative")
@@ -280,7 +280,7 @@ for k in range(len(doc)):
         count=count+1       
 #print("Accuracy is: "+ str(round(count/len(doc)*100,2)))
 print("doc:",dpos,dneg)
-print("predicted:",tpos,tneg")
+print("predicted:",tpos,tneg)
 print("-----------")
 print(tweets)
 print(senti)
