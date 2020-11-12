@@ -81,8 +81,9 @@ sentiment_doc=[]
 for j in range(len(doc)):
     str1=traindata.Summary[j]
     str2=str1.lower()
-    tweets.append(str2)   # converted into lower case
-    senti.append(traindata.Score[j])
+    if traindata.HelpfulnessNumerator<=traindata.HelpfulnessDenominator:
+        tweets.append(str2)   # converted into lower case
+        senti.append(traindata.Score[j])
 
 def decontracted(phrase):   # text pre-processing 
         # specific
@@ -114,7 +115,7 @@ dpos=0
 dneg=0
 tpos=0
 tneg=0
-for j in range(len(doc)):
+for j in range(len(tweets)):
     if senti[j]<=3:
         dneg+=1
         sentiment_doc.append("Negative") 
@@ -275,10 +276,10 @@ for j in range(len(doc)):
     print("Doc sentiment: " +str(senti[j])+"\n")    
     
 count=0
-for k in range(len(doc)):
+for k in range(len(tweets)):
     if(sentiment_doc[k]==sentiment[k]):
         count=count+1       
-#print("Accuracy is: "+ str(round(count/len(doc)*100,2)))
+#print("Accuracy is: "+ str(round(count/len(tweets)*100,2)))
 print("doc:",dpos,dneg)
 print("predicted:",tpos,tneg)
 print("-----------")
