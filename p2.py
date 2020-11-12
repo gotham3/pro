@@ -126,6 +126,12 @@ for j in range(len(doc)):
     print("------ review -------")
     print(str(j+1)+" {:-<65} {}".format(tweets[j], str(ss))) 
     
+    if posscore>negscore:
+        posscore+=neuscore
+        negscore=0
+    if posscore<negscore:
+        negscore+=neuscore
+        posscore=0
     if (posscore==1.0):
         posscore=0.9 
     else:
@@ -134,12 +140,7 @@ for j in range(len(doc)):
         negscore=0.9
     else:
         negscore=round(negscore,1)
-    if posscore>negscore:
-        posscore+=neuscore
-        negscore=0
-    if posscore<negscore:
-        negscore+=neuscore
-        posscore=0
+    
     
     if posscore==1.0 and negscore==0.0:
         posscore=0.9
