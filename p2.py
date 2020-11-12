@@ -107,7 +107,7 @@ def decontracted(phrase):   # text pre-processing
     phrase = re.sub(r"\'m", " am", phrase)
     return phrase
     
-for k in range(len(doc)):
+for k in range(len(tweets)):
     tweets[k]=decontracted(tweets[k])
          
 sid = SentimentIntensityAnalyzer()
