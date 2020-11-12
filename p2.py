@@ -20,7 +20,7 @@ start = time.time()
 
 #You can insert path of any dataset with column TweetText for the text and Sentiment for the sentiment labels of text
 
-traindata=pd.read_csv(r"C:\Users\Rohith\Downloads\amazon_food_reviews\Reviews.csv",encoding='ISO-8859-1', nrows=5000)  
+traindata=pd.read_csv(r"C:\Users\Rohith\Downloads\amazon_food_reviews\Reviews.csv",encoding='ISO-8859-1', nrows=10000)  
 doc=traindata.Summary
 print(len(doc))
 sentidoc=traindata.Score
