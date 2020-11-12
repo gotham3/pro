@@ -3,6 +3,7 @@ import re
 import numpy as np
 import skfuzzy as fuzz
 import matplotlib.pyplot as plt
+import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import time
 import nltk
@@ -20,7 +21,7 @@ start = time.time()
 
 #You can insert path of any dataset with column TweetText for the text and Sentiment for the sentiment labels of text
 
-traindata=pd.read_csv(r"C:\Users\Rohith\Downloads\amazon_food_reviews\Reviews.csv",encoding='ISO-8859-1', nrows=10000)  
+traindata=pd.read_csv(r"F:\Python\Reviews.csv",encoding='ISO-8859-1', nrows=1000)  
 doc=traindata.Summary
 print(len(doc))
 sentidoc=traindata.Score
@@ -79,9 +80,9 @@ sentiment=[]
 sentiment_doc=[]
 
 for j in range(len(doc)):
-    str1=traindata.Summary[j]
+    str1=traindata.Text[j]
     str2=str1.lower()
-    if traindata.HelpfulnessNumerator<=traindata.HelpfulnessDenominator:
+    if traindata.HelpfulnessNumerator[j]<=traindata.HelpfulnessDenominator[j]:
         tweets.append(str2)   # converted into lower case
         senti.append(traindata.Score[j])
 
@@ -141,7 +142,10 @@ for j in range(len(tweets)):
         negscore=0.9
     else:
         negscore=round(negscore,1)
-    
+    if posscore==0.0 and negscore==0.0:
+        negscore=0.49
+        posscore=0.49
+        neuscore=0.02
     
     if posscore==1.0 and negscore==0.0:
         posscore=0.9
@@ -277,12 +281,12 @@ for k in range(len(tweets)):
 print("doc:",dpos,dneg)
 print("predicted:",tpos,tneg)
 print("-----------")
-print(tweets)
+'''print(tweets)
 print(senti)
 print(sentiment)
 print("----")
 print(sentiment_doc)
-print("------")
+print("------")'''
 print(count)
 print(len(doc))
 print(len(senti))
