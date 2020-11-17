@@ -16,7 +16,7 @@ from nltk.stem.wordnet import WordNetLemmatizer
 stop = set(stopwords.words('english')) #set of stopwords
 sno = nltk.stem.SnowballStemmer('english') #initialising the snowball stemmer
 
-
+tneu=0
 start = time.time()
 
 #You can insert path of any dataset with column TweetText for the text and Sentiment for the sentiment labels of text
@@ -78,13 +78,14 @@ tweets=[]
 senti=[]
 sentiment=[]
 sentiment_doc=[]
-
+well=0
 for j in range(len(doc)):
     str1=traindata.Text[j]
     str2=str1.lower()
-    if traindata.HelpfulnessNumerator[j]<=traindata.HelpfulnessDenominator[j]:
+    if traindata.HelpfulnessNumerator[j]<=traindata.HelpfulnessDenominator[j] and traindata.Score[j]!=3:
         tweets.append(str2)   # converted into lower case
         senti.append(traindata.Score[j])
+print(senti.count(3))
 
 def decontracted(phrase):   # text pre-processing 
         # specific
@@ -117,12 +118,13 @@ dneg=0
 tpos=0
 tneg=0
 for j in range(len(tweets)):
-    if senti[j]<=3:
+    if senti[j]<3:
         dneg+=1
         sentiment_doc.append("Negative") 
-    elif senti[j]>3:
+    elif senti[j]>=3:
         dpos+=1
         sentiment_doc.append("Positive")
+   
     
     
     ss = sid.polarity_scores(tweets[j])
@@ -132,17 +134,22 @@ for j in range(len(tweets)):
     compoundscore=ss['compound']
     print("------ review -------")
     print(str(j+1)+" {:-<65} {}".format(tweets[j], str(ss))) 
-    
-    
-    if (posscore==1.0):
+    if neuscore==1.0:
+        posscore+=0.49
+        negscore+=0.49
+        neuscore=0.02
+        
+    '''if (posscore==1.0):
         posscore=0.9 
     else:
-        posscore=round(posscore,1)
+        posscore=round(posscore,2)
+
     if (negscore==1.0):
         negscore=0.9
     else:
-        negscore=round(negscore,1)
-    if posscore==0.0 and negscore==0.0:
+        negscore=round(negscore,2)'''
+    
+    '''if posscore==0.0 and negscore==0.0:
         negscore=0.49
         posscore=0.49
         neuscore=0.02
@@ -150,7 +157,7 @@ for j in range(len(tweets)):
     if posscore==1.0 and negscore==0.0:
         posscore=0.9
         negscore=0.0
-        neuscore=0.1
+        neuscore=0.1'''
     print("\nPositive Score for each  tweet :")    
    
     print(posscore)
@@ -270,13 +277,16 @@ for j in range(len(tweets)):
         print("\nOutput after Defuzzification: Positive")
         sentiment.append("Positive")
         tpos+=1
-        
-    print("Doc sentiment: " +str(senti[j])+"\n")    
     
+    print("Doc sentiment: " +str(senti[j])+"\n")    
+    if(sentiment_doc[j]!=sentiment[-1]):
+        print("######################")
+        print(posscore,negscore,neuscore)
+        
 count=0
 for k in range(len(tweets)):
     if(sentiment_doc[k]==sentiment[k]):
-        count=count+1       
+        count=count+1
 #print("Accuracy is: "+ str(round(count/len(tweets)*100,2)))
 print("doc:",dpos,dneg)
 print("predicted:",tpos,tneg)
@@ -287,7 +297,7 @@ print(sentiment)
 print("----")
 print(sentiment_doc)
 print("------")'''
-print(count)
+print(count*100/(len(sentiment_doc)))
 print(len(doc))
 print(len(senti))
 print(len(sentiment_doc))
