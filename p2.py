@@ -3,6 +3,7 @@ import re
 import numpy as np
 import skfuzzy as fuzz
 import matplotlib.pyplot as plt
+import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import time
 import nltk
@@ -15,12 +16,12 @@ from nltk.stem.wordnet import WordNetLemmatizer
 stop = set(stopwords.words('english')) #set of stopwords
 sno = nltk.stem.SnowballStemmer('english') #initialising the snowball stemmer
 
-
+tneu=0
 start = time.time()
 
 #You can insert path of any dataset with column TweetText for the text and Sentiment for the sentiment labels of text
 
-traindata=pd.read_csv(r"C:\Users\Rohith\Desktop\m1\Fuzzy-Rule-based-Unsupervised-Sentiment-Analysis-from-Social-Media-Posts/Rev.csv",encoding='ISO-8859-1')  
+traindata=pd.read_csv(r"C:\Users\Rohith\Downloads\amazon_food_reviews\Reviews.csv",encoding='ISO-8859-1', nrows=40000)  
 doc=traindata.Summary
 print(len(doc))
 sentidoc=traindata.Score
@@ -52,13 +53,11 @@ ax0.plot(x_p, p_md, 'g', linewidth=1.5, label='Medium')
 ax0.plot(x_p, p_hi, 'r', linewidth=1.5, label='High')
 ax0.set_title('Pos')
 ax0.legend()
-
 ax1.plot(x_n, n_lo, 'b', linewidth=1.5, label='Low')
 ax1.plot(x_n, n_md, 'g', linewidth=1.5, label='Medium')
 ax1.plot(x_n, n_hi, 'r', linewidth=1.5, label='High')
 ax1.set_title('Neg')
 ax1.legend()
-
 ax2.plot(x_op, op_Pos, 'b', linewidth=1.5, label='Negative')
 ax2.plot(x_op, op_Neu, 'g', linewidth=1.5, label='Neutral')
 ax2.plot(x_op, op_Neg, 'r', linewidth=1.5, label='Positive')
@@ -79,12 +78,14 @@ tweets=[]
 senti=[]
 sentiment=[]
 sentiment_doc=[]
-
+well=0
 for j in range(len(doc)):
-    str1=traindata.Summary[j]
+    str1=traindata.Text[j]
     str2=str1.lower()
-    tweets.append(str2)   # converted into lower case
-    senti.append(traindata.Score[j])
+    if traindata.HelpfulnessNumerator[j]<=traindata.HelpfulnessDenominator[j] and traindata.Score[j]!=3:
+        tweets.append(str2)   # converted into lower case
+        senti.append(traindata.Score[j])
+print(senti.count(3))
 
 def decontracted(phrase):   # text pre-processing 
         # specific
@@ -108,18 +109,23 @@ def decontracted(phrase):   # text pre-processing
     phrase = re.sub(r"\'m", " am", phrase)
     return phrase
     
-for k in range(len(doc)):
+for k in range(len(tweets)):
     tweets[k]=decontracted(tweets[k])
          
 sid = SentimentIntensityAnalyzer()
-
-for j in range(len(doc)):
+dpos=0
+dneg=0
+tpos=0
+tneg=0
+for j in range(len(tweets)):
     if senti[j]<3:
-      	sentiment_doc.append("Negative") 
-    elif senti[j]>3:
-    	sentiment_doc.append("Positive")
-    else:
-      sentiment_doc.append("Neutral")
+        dneg+=1
+        sentiment_doc.append("Negative") 
+    elif senti[j]>=3:
+        dpos+=1
+        sentiment_doc.append("Positive")
+   
+    
     
     ss = sid.polarity_scores(tweets[j])
     posscore=ss['pos']
@@ -128,21 +134,35 @@ for j in range(len(doc)):
     compoundscore=ss['compound']
     print("------ review -------")
     print(str(j+1)+" {:-<65} {}".format(tweets[j], str(ss))) 
-    
-    print("\nPositive Score for each  tweet :")    
-    if (posscore==1):
+    if neuscore==1.0:
+        posscore+=0.49
+        negscore+=0.49
+        neuscore=0.02
+        
+    '''if (posscore==1.0):
         posscore=0.9 
     else:
-        posscore=round(posscore,1)
+        posscore=round(posscore,2)
+    if (negscore==1.0):
+        negscore=0.9
+    else:
+        negscore=round(negscore,2)'''
+    
+    '''if posscore==0.0 and negscore==0.0:
+        negscore=0.49
+        posscore=0.49
+        neuscore=0.02
+    
+    if posscore==1.0 and negscore==0.0:
+        posscore=0.9
+        negscore=0.0
+        neuscore=0.1'''
+    print("\nPositive Score for each  tweet :")    
+   
     print(posscore)
 
     print("\nNegative Score for each  tweet :")
-    if (negscore==1):
-        negscore=0.9
-    else:
-        negscore=round(negscore,1)
     print(negscore)
-
 # We need the activation of our fuzzy membership functions at these values.
     p_level_lo = fuzz.interp_membership(x_p, p_lo, posscore)
     p_level_md = fuzz.interp_membership(x_p, p_md, posscore)
@@ -171,9 +191,9 @@ for j in range(len(doc)):
     n2=np.fmax(n1,active_rule8)     
     op_activation_lo = np.fmin(n2,op_Neg)
     
-    neu1=np.fmax(active_rule1,active_rule5)
-    neu2=np.fmax(neu1,active_rule9)     
-    op_activation_md = np.fmin(neu2,op_Neu)
+    #neu1=np.fmax(active_rule1,active_rule5)
+    #neu2=np.fmax(neu1,active_rule9)     
+    #op_activation_md = np.fmin(neu2,op_Neu)
     
     p1=np.fmax(active_rule2,active_rule3)
     p2=np.fmax(p1,active_rule6)   
@@ -182,8 +202,7 @@ for j in range(len(doc)):
     op0 = np.zeros_like(x_op)
     
     # Aggregate all three output membership functions together
-    aggregated = np.fmax(op_activation_lo,
-                         np.fmax(op_activation_md, op_activation_hi))
+    aggregated = np.fmax(op_activation_lo, op_activation_hi)
     
     # Calculate defuzzified result
     op = fuzz.defuzz(x_op, aggregated, 'centroid')
@@ -247,34 +266,37 @@ for j in range(len(doc)):
     #print("\nAggregated Output: "+str(aggregated))
 
     print("\nDefuzzified Output: "+str(output))
-
 # Scale : Neg Neu Pos   
-    if 0<(output)<=4:    # R
+    if 0<(output)<5:    # R
         print("\nOutput after Defuzzification: Negative")
         sentiment.append("Negative")
-    elif 4<(output)<6:
-    	print("\nOutput after Defuzzification: Neutral")
-        sentiment.append("Neutral")
-    elif 6<=(output)<10:
+        tneg+=1
+   
+    elif 5<=(output)<10:
         print("\nOutput after Defuzzification: Positive")
         sentiment.append("Positive")
-        
-    print("Doc sentiment: " +str(senti[j])+"\n")    
+        tpos+=1
     
+    print("Doc sentiment: " +str(senti[j])+"\n")    
+    if(sentiment_doc[j]!=sentiment[-1]):
+        print("######################")
+        print(posscore,negscore,neuscore)
+        
 count=0
-for k in range(len(doc)):
+for k in range(len(tweets)):
     if(sentiment_doc[k]==sentiment[k]):
-        count=count+1       
-#print("Accuracy is: "+ str(round(count/len(doc)*100,2)))
-
+        count=count+1
+#print("Accuracy is: "+ str(round(count/len(tweets)*100,2)))
+print("doc:",dpos,dneg)
+print("predicted:",tpos,tneg)
 print("-----------")
-print(tweets)
+'''print(tweets)
 print(senti)
 print(sentiment)
 print("----")
 print(sentiment_doc)
-print("------")
-print(count)
+print("------")'''
+print(count*100/(len(sentiment_doc)))
 print(len(doc))
 print(len(senti))
 print(len(sentiment_doc))
@@ -282,21 +304,15 @@ print(len(sentiment_doc))
 from sklearn.metrics import f1_score, precision_score, recall_score
 y_true = sentiment_doc
 y_pred = sentiment
-
 #p1=precision_score(y_true, y_pred, average='macro')  
-
 print("Precision score (MACRO): " + str(round((p1*100),2)))
-
 #r1=recall_score(y_true, y_pred, average='macro')  
-
 #print("Recall score (MACRO): " + str(round((r1*100),2)))
-
 f1=f1_score(y_true, y_pred, average='macro')  
 f2=f1_score(y_true, y_pred, average='micro')  
-
 print("F1 score (MACRO): " + str(round((f1*100),2)))
 print("F1 score (MICRO): "+ str(round((f2*100),2)))
-
+#a
 end = time.time()
 print("Execution Time: "+str(round((end - start),3))+" secs")
 '''
